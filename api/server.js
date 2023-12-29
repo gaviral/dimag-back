@@ -1,31 +1,39 @@
-// See https://github.com/typicode/json-server#module
-const jsonServer = require('json-server')
+// Import the json-server module to create a JSON API server.
+const jsonServer = require('json-server');
 
-const server = jsonServer.create()
+// Create an instance of a JSON Server.
+const server = jsonServer.create();
 
-// Uncomment to allow write operations
-// const fs = require('fs')
-// const path = require('path')
-// const filePath = path.join('db.json')
-// const data = fs.readFileSync(filePath, "utf-8");
-// const db = JSON.parse(data);
-// const router = jsonServer.router(db)
+// Import fs and path modules to work with the file system.
+const fs = require('fs');
+const path = require('path');
 
-// Comment out to allow write operations
-const router = jsonServer.router('db.json')
+// Define the path to the db.json file.
+const filePath = path.join('db.json');
 
-const middlewares = jsonServer.defaults()
+// Read the contents of the db.json file.
+const data = fs.readFileSync(filePath, "utf-8");
 
-server.use(middlewares)
-// Add this before server.use(router)
-server.use(jsonServer.rewriter({
-    '/api/*': '/$1',
-    '/blog/:resource/:id/show': '/:resource/:id'
-}))
-server.use(router)
+// Parse the JSON data from the db.json file.
+const db = JSON.parse(data);
+
+// Create a router for the JSON Server using the parsed db.json data.
+// This allows json-server to provide routes based on this data.
+const router = jsonServer.router(db);
+
+// Set default middlewares (logger, static, CORS, and no-cache) provided by json-server.
+const middlewares = jsonServer.defaults();
+
+// Apply the default middlewares.
+server.use(middlewares);
+
+// Mount the router on the server.
+server.use(router);
+
+// Start the server on port 3000 and log a message to the console.
 server.listen(3000, () => {
-    console.log('JSON Server is running')
-})
+    console.log('JSON Server is running');
+});
 
-// Export the Server API
-module.exports = server
+// Export the server object for use elsewhere, like in testing or when imported into other modules.
+module.exports = server;
